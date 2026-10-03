@@ -1,0 +1,960 @@
+<!doctype html>
+<!--
+  zuowen-coach 引导页模板（示例题目：《不拘一格的美》，发现转变型）
+  做新题目时，按 references/guide-page-spec.md 替换数据：
+  KEY、PAIRS、REVERSE、CATS、FIRST、REACT、TIME、EVENT、PERSON_TIME、PERSON_EVENT、
+  FEEL、HIDE、AFTER、METHODS、TRANSFER、paras()、beatDefs()，以及各步标题文案。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5F6F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12171F" media="(prefers-color-scheme: dark)">
+<title>不拘一格的美 · 作文引导</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+:root{
+  --bg:#F5F6F2;--card:#FFFFFF;--ink:#1E2A45;--muted:#5D6678;--line:#D4DAD4;
+  --grid:#B9D3C6;--grid-strong:#6FA58B;--soft:#E9EEE9;
+  --yellow:#E9B824;--rouge:#B8323F;--green:#2D7560;--on-ink:#FFFFFF;--on-rouge:#FFFFFF;
+  --display:"ZCOOL XiaoWei","Songti SC","STSong","Noto Serif SC","SimSun",serif;
+  --body:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --cell:clamp(46px,13.6vw,92px);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171F;--card:#1B222D;--ink:#E8ECF2;--muted:#A2ABBA;--line:#2E3745;
+  --grid:#24342F;--grid-strong:#4C7A66;--soft:#222A35;
+  --rouge:#D9505D;--green:#6DBA9F;--on-ink:#12171F;}}
+:root[data-theme="dark"]{--bg:#12171F;--card:#1B222D;--ink:#E8ECF2;--muted:#A2ABBA;--line:#2E3745;--grid:#24342F;--grid-strong:#4C7A66;--soft:#222A35;--rouge:#D9505D;--green:#6DBA9F;--on-ink:#12171F;}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100%;background-color:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.75;-webkit-text-size-adjust:100%;
+  background-image:linear-gradient(color-mix(in srgb,var(--grid) 45%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--grid) 45%,transparent) 1px,transparent 1px);
+  background-size:36px 36px;background-position:-1px -1px;background-attachment:fixed}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+[hidden]{display:none!important}
+h1,h2,h3,p,ol,ul{margin:0}
+.q:focus{outline:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);margin-top:calc(-1 * env(safe-area-inset-top,0px))}
+.top-in{max-width:1120px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:58px}
+.mark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:1.05rem;white-space:nowrap}
+.mark .cellmini{width:28px;height:28px;border:1.5px solid var(--grid-strong);display:grid;place-items:center;font-size:1rem;position:relative}
+.mark .cellmini b{font-weight:400;color:var(--rouge);transform:translate(4px,-5px) rotate(-8deg)}
+.cells{display:flex;gap:0;border:1.5px solid var(--grid-strong)}
+.pc{width:30px;height:30px;display:grid;place-items:center;font-family:var(--display);font-size:1rem;border-right:1px solid var(--grid);position:relative;color:var(--muted)}
+.pc:last-child{border-right:0}
+.pc.done{background:var(--rouge);color:var(--on-rouge)}
+.pc.now::after{content:"";position:absolute;left:5px;right:5px;bottom:3px;height:3px;background:var(--yellow);border-radius:2px}
+.cells.off{visibility:hidden}
+.step-txt{font-size:.82rem;color:var(--muted);white-space:nowrap}
+
+/* ---------- layout ---------- */
+.stage{max-width:1120px;margin:0 auto;padding:28px 20px 140px;display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+@media (min-width:980px){
+  .stage.with-draft{grid-template-columns:minmax(0,640px) minmax(0,1fr);gap:56px}
+}
+.screen{max-width:640px}
+.screen.fwd{animation:fwd .42s var(--ease)}
+.screen.back{animation:back .42s var(--ease)}
+@keyframes fwd{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes back{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+
+/* ---------- cover ---------- */
+.cover{min-height:calc(100svh - 230px);display:flex;flex-direction:column;justify-content:center;max-width:none;padding:3vh 0 0}
+.hero{position:relative;width:calc(var(--cell) * 6 + 3px);margin:calc(var(--cell) * 1.7) 0 calc(var(--cell) * .45)}
+.row{display:flex;border:1.5px solid var(--grid-strong);background:var(--card);position:relative}
+.row::before,.row::after{content:"";position:absolute;left:-1.5px;right:-1.5px;height:calc(var(--cell) * .16);border:1.5px solid var(--grid-strong);border-left:0;border-right:0}
+.row::before{bottom:100%}
+.row::after{top:100%;border-top:0}
+.c{width:var(--cell);height:var(--cell);border-right:1px solid var(--grid);display:grid;place-items:center;font-family:var(--display);font-size:calc(var(--cell) * .68);line-height:1;position:relative}
+.c:last-child{border-right:0}
+.c span{display:block;transition:transform .9s var(--ease)}
+.c.empty{background:repeating-linear-gradient(45deg,transparent 0 6px,color-mix(in srgb,var(--grid) 55%,transparent) 6px 7px)}
+.leap{position:absolute;font-family:var(--display);font-size:calc(var(--cell) * 2.1);line-height:1;color:var(--rouge);left:calc(var(--cell) * 4.78);bottom:calc(var(--cell) * .62);transform:rotate(-7deg);transform-origin:30% 100%;pointer-events:none}
+.hero .c:nth-child(4) span{transform:translate(18%,-62%) rotate(11deg);color:var(--green)}
+.hero .c:nth-child(2) span{transform:rotate(-6deg)}
+.lead{font-family:var(--display);font-size:clamp(24px,6vw,34px);line-height:1.4;margin:18px 0 10px;max-width:15em}
+.cover .small{color:var(--muted);max-width:30em}
+.promise{display:flex;gap:22px;flex-wrap:wrap;margin-top:26px;font-size:.95rem}
+.promise div{display:flex;align-items:baseline;gap:8px}
+.promise strong{font-family:var(--display);font-weight:400;font-size:1.8rem;color:var(--rouge);line-height:1}
+@media (prefers-reduced-motion:no-preference){
+  .hero.play .c:nth-child(4) span{animation:hop 1.1s .5s var(--ease) both}
+  .hero.play .leap{animation:leap 1.1s .25s var(--ease) both}
+  .hero.play .c.empty{animation:fadeIn .4s .7s both}
+  @keyframes hop{0%{transform:none;color:var(--ink)}100%{transform:translate(18%,-62%) rotate(11deg);color:var(--green)}}
+  @keyframes leap{0%{transform:translate(calc(var(--cell) * .3),calc(var(--cell) * 1.08)) scale(.33);color:var(--ink)}60%{transform:translate(0,-10%) scale(1.05) rotate(-11deg)}100%{transform:rotate(-7deg);color:var(--rouge)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+}
+
+/* ---------- question ---------- */
+.q{font-family:var(--display);font-weight:400;font-size:clamp(30px,7.6vw,42px);line-height:1.28;margin-bottom:12px;letter-spacing:.01em}
+.sub{color:var(--muted);margin-bottom:24px;max-width:32em}
+.key{background:var(--card);border:1.5px solid var(--grid-strong);padding:16px 18px;margin-bottom:26px;position:relative}
+.key p+p{margin-top:8px}
+.key strong{font-weight:600;background:linear-gradient(transparent 62%,color-mix(in srgb,var(--yellow) 55%,transparent) 62%)}
+.gl{font-weight:600;margin:26px 0 10px;font-size:1rem;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.gl:first-child{margin-top:0}
+.gl small{font-weight:400;color:var(--muted);font-size:.84rem}
+
+/* pairs */
+.pair{margin-bottom:26px}
+.pair-q{font-size:.85rem;color:var(--muted);margin-bottom:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;line-height:1.65;min-height:52px;transition:border-color .2s,background .2s}
+.opt::before{content:"";flex:0 0 22px;height:22px;margin-top:2px;border:1.5px solid var(--grid-strong);border-radius:4px;background:var(--card)}
+.opt.picked.right{border-color:var(--green);background:color-mix(in srgb,var(--green) 9%,var(--card))}
+.opt.picked.right::before{background:var(--green);border-color:var(--green);box-shadow:inset 0 0 0 4px var(--card)}
+.opt.picked.wrong{border-color:var(--rouge)}
+.opt.picked.wrong::before{background:var(--rouge);border-color:var(--rouge);box-shadow:inset 0 0 0 4px var(--card)}
+.feedback{font-size:.95rem;padding:10px 14px;border-left:3px solid var(--green);background:var(--card)}
+.feedback.no{border-left-color:var(--rouge)}
+@media (prefers-reduced-motion:no-preference){.opt.picked.wrong{animation:shake .32s}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 18px;min-height:48px;font-size:1rem;line-height:1.35;transition:background .18s,border-color .18s,color .18s}
+.chip:hover{border-color:var(--grid-strong)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.chip.other{border-style:dashed;color:var(--muted)}
+.chip.other[aria-pressed="true"]{color:var(--on-ink)}
+@media (prefers-reduced-motion:no-preference){.chip.stamp{animation:stamp .34s var(--ease)}@keyframes stamp{0%{transform:scale(1.12) rotate(-2deg)}100%{transform:none}}}
+.other-in{margin-top:10px}
+.other-in input{width:100%;border:1.5px dashed var(--grid-strong);border-radius:12px;background:var(--card);padding:11px 14px;font-size:1rem}
+textarea{width:100%;border:1.5px dashed var(--grid-strong);border-radius:12px;background:var(--card);padding:12px 14px;line-height:1.75;font-size:1rem;min-height:84px;resize:vertical;
+  background-image:linear-gradient(transparent calc(1.75em - 1px),color-mix(in srgb,var(--grid) 70%,transparent) calc(1.75em - 1px),color-mix(in srgb,var(--grid) 70%,transparent) 1.75em,transparent 1.75em);background-size:100% 1.75em;background-position:0 12px;background-origin:padding-box}
+textarea:focus,.other-in input:focus{outline:none;border-style:solid;border-color:var(--ink)}
+.ask{color:var(--green);font-size:.96rem;margin:12px 0 0;display:flex;gap:8px}
+.ask::before{content:"问";font-family:var(--display);flex:0 0 auto;color:var(--on-rouge);background:var(--green);width:1.4em;height:1.4em;display:grid;place-items:center;font-size:.85rem;margin-top:.2em}
+
+/* reverse prompt */
+.reverse{border:1.5px solid var(--rouge);padding:14px 16px 14px 60px;margin-bottom:24px;position:relative;background:var(--card)}
+.reverse::before{content:"反";position:absolute;left:14px;top:14px;width:32px;height:32px;display:grid;place-items:center;font-family:var(--display);background:var(--rouge);color:var(--on-rouge);font-size:1.05rem}
+.reverse .label{font-size:.82rem;color:var(--rouge)}
+.reverse .text{font-family:var(--display);font-size:1.28rem;line-height:1.5}
+
+/* mobile draft */
+.draft-inline{margin-top:28px;background:var(--card);border-top:3px solid var(--ink);padding:14px 16px}
+.draft-inline .dl{font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.draft-inline p{font-family:var(--display);font-size:1.12rem;line-height:1.8;white-space:pre-wrap}
+@media (min-width:980px){.draft-inline{display:none}}
+
+/* method seal card */
+.method{margin-top:36px;display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:start;padding-top:20px;border-top:1.5px dashed var(--grid-strong)}
+.seal{width:52px;height:52px;background:var(--rouge);color:var(--on-rouge);display:grid;place-items:center;font-family:var(--display);font-size:1.7rem;line-height:1;transform:rotate(-4deg);box-shadow:inset 0 0 0 3px var(--rouge),inset 0 0 0 4.5px var(--on-rouge)}
+.method .mh{font-family:var(--display);font-size:1.22rem;line-height:1.4}
+.method .mb{font-size:.97rem;margin-top:2px}
+.method .mf{font-size:.86rem;color:var(--muted);margin-top:6px}
+
+/* checks */
+.check{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.check p{margin-bottom:10px}
+.yn{display:flex;gap:10px;flex-wrap:wrap}
+.yn button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:6px 18px;min-height:46px}
+.yn button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.fix{margin-top:10px;font-size:.95rem}
+.fix button{background:none;border:0;color:var(--rouge);text-decoration:underline;text-underline-offset:4px;padding:0;min-height:40px}
+
+/* draft panel (desktop) */
+.draft-panel{display:none}
+@media (min-width:980px){
+  .stage.with-draft .draft-panel{display:block;position:sticky;top:96px;align-self:start}
+}
+.sheet{background:var(--card);border:1.5px solid var(--grid-strong);padding:22px 24px 26px;position:relative}
+.sheet-h{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.sheet-h b{font-family:var(--display);font-weight:400;font-size:1.3rem}
+.sheet-h>span{font-size:.8rem;color:var(--muted)}
+.para{padding:12px 0;border-bottom:1px solid var(--grid)}
+.para:last-child{border-bottom:0}
+.para .ph{font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between}
+.para p{font-family:var(--display);font-size:1.05rem;line-height:1.85;white-space:pre-wrap;min-height:1.85em}
+.para .ghost{color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.para.live p{color:var(--ink)}
+.para.focus{background:linear-gradient(90deg,color-mix(in srgb,var(--yellow) 22%,transparent),transparent 70%);margin:0 -24px;padding-left:24px;padding-right:24px}
+
+/* final */
+.final-head{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.title-cells{display:flex;border:1.5px solid var(--grid-strong);background:var(--card);position:relative}
+.title-cells .c{--cell:44px}
+.title-cells .c.out span{transform:translate(30%,-55%) rotate(-10deg);color:var(--rouge);font-size:1.45em}
+.done-seal{width:74px;height:74px;border:3px solid var(--rouge);color:var(--rouge);display:grid;place-items:center;font-family:var(--display);font-size:2.3rem;transform:rotate(-12deg);border-radius:6px;line-height:1}
+@media (prefers-reduced-motion:no-preference){.done-seal.play{animation:press .6s .2s var(--ease) both}@keyframes press{0%{opacity:0;transform:scale(2.2) rotate(-24deg)}70%{opacity:1;transform:scale(.94) rotate(-10deg)}100%{transform:rotate(-12deg)}}}
+.done-time{font-family:var(--display);font-size:1.5rem;line-height:1.4}
+.sheet.final .para p{font-size:1.08rem}
+.para p.tip{font-size:.9rem;color:var(--green);margin-top:6px;font-family:var(--body);line-height:1.65;min-height:0}
+.para p.tip::before{content:"写的时候想：";color:var(--muted)}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 0}
+.h-kit{font-family:var(--display);font-weight:400;font-size:1.7rem;margin:44px 0 6px}
+.kit{list-style:none;padding:0;display:grid;gap:10px;margin-top:16px}
+@media (min-width:640px){.kit{grid-template-columns:1fr 1fr}}
+.kit li{background:var(--card);border:1.5px solid var(--line);padding:14px 14px 14px 62px;position:relative;min-height:74px}
+.kit li i{position:absolute;left:14px;top:14px;width:36px;height:36px;background:var(--rouge);color:var(--on-rouge);font-style:normal;font-family:var(--display);display:grid;place-items:center;font-size:1.2rem;transform:rotate(-4deg)}
+.kit b{font-family:var(--display);font-weight:400;font-size:1.12rem;display:block;line-height:1.4}
+.kit span{color:var(--muted);font-size:.9rem;line-height:1.6;display:block}
+.transfer{margin-top:16px;border:1.5px solid var(--grid-strong);background:var(--card);padding:0 18px}
+.transfer summary{cursor:pointer;min-height:54px;display:flex;align-items:center;font-weight:600;list-style:none}
+.transfer summary::-webkit-details-marker{display:none}
+.transfer summary::after{content:"+";margin-left:auto;font-family:var(--display);font-size:1.5rem;color:var(--rouge)}
+.transfer[open] summary::after{content:"−"}
+.transfer ol{padding:0 0 16px 1.4em}
+.transfer li{margin-bottom:8px;font-size:.95rem}
+.transfer li b{font-weight:600}
+
+.mini-cells{display:inline-flex;border:1.5px solid var(--grid-strong);align-self:flex-start;margin:4px 0 6px}
+.mini-cells .c{--cell:40px;font-size:26px}
+.mini-cells .c.out{overflow:visible}
+.mini-cells .c.out span{transform:translate(42%,-46%) rotate(-10deg);color:var(--rouge);font-size:38px}
+@media (min-width:980px){
+  .screen[data-step="10"]{max-width:1080px}
+  .final-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:start}
+  .final-r .h-kit{margin-top:0}
+  .final-r .kit{grid-template-columns:1fr}
+}
+.readbox{background:var(--card);border:1.5px solid var(--grid-strong);padding:16px 18px;margin-bottom:22px}
+.readbox .rl{font-size:.8rem;color:var(--muted)}
+.readbox p.rt{font-family:var(--display);font-size:1.12rem;line-height:1.85;white-space:pre-wrap;margin-bottom:10px}
+.readbox p.rt:last-child{margin-bottom:0}
+.cq{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.cq .cqt{font-weight:600;margin-bottom:4px}
+.cq .cqh{font-size:.9rem;color:var(--muted);margin-bottom:10px}
+.cq .cqf{margin-top:12px}
+.cq .cqf label{display:block;font-size:.92rem;color:var(--green);margin-bottom:6px}
+.cq input[type=text],.beat input{width:100%;border:1.5px dashed var(--grid-strong);border-radius:12px;background:var(--card);padding:11px 14px;font-size:1rem}
+.cq input:focus,.beat input:focus{outline:none;border-style:solid;border-color:var(--ink)}
+.cq .ex,.beat .ex{font-size:.82rem;color:var(--muted);margin-top:5px}
+.demo{background:var(--card);border:1.5px solid var(--ink);padding:0 16px;margin-bottom:22px}
+.demo summary{min-height:52px;display:flex;align-items:center;cursor:pointer;font-weight:600;list-style:none}
+.demo summary::-webkit-details-marker{display:none}
+.demo summary::after{content:"+";margin-left:auto;font-family:var(--display);font-size:1.5rem;color:var(--rouge)}
+.demo[open] summary::after{content:"−"}
+.demo-b{padding-bottom:14px}
+.demo-b .dk{font-size:.88rem;color:var(--muted);margin-top:8px}
+.demo-b .ds{font-family:var(--display);font-size:1.12rem;line-height:1.8;border-left:3px solid var(--green);padding-left:10px}
+.demo-b .dn{font-size:.92rem;margin-top:12px;color:var(--green)}
+.bgroup{border:1.5px solid var(--grid-strong);background:var(--card);margin-bottom:18px}
+.bgroup.bkey{border-color:var(--rouge)}
+.bgh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:12px 16px;border-bottom:1px solid var(--grid)}
+.bgh b{font-family:var(--display);font-weight:400;font-size:1.3rem}
+.bgh span{font-size:.82rem;color:var(--muted)}
+.bgh em{font-style:normal;font-size:.75rem;background:var(--rouge);color:var(--on-rouge);padding:1px 8px;margin-left:8px;vertical-align:3px}
+.beat{display:grid;grid-template-columns:30px 1fr;gap:10px;padding:12px 16px;border-bottom:1px solid var(--grid)}
+.beat:last-child{border-bottom:0}
+.beat .bn{font-family:var(--display);font-size:1.25rem;color:var(--muted);line-height:1.5}
+.beat.done .bn{color:var(--green)}
+.beat label{display:block;font-size:.97rem;margin-bottom:6px}
+.beat label small{color:var(--muted);font-size:.8rem;margin-left:6px}
+.beat .ex::before{content:"示范：";}
+.list-para{padding:12px 0;border-bottom:1px solid var(--grid)}
+.list-para:last-child{border-bottom:0}
+.list-para .ph{font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between}
+.list-para .ph b{font-family:var(--display);font-weight:400;font-size:1.15rem;color:var(--ink)}
+.list-para.bkey .ph b{color:var(--rouge)}
+.list-para ol{margin:6px 0 0;padding-left:1.6em}
+.list-para li{font-family:var(--display);font-size:1.05rem;line-height:1.75;margin:2px 0}
+.list-para li::marker{color:var(--muted);font-family:var(--body);font-size:.85rem}
+.sheet-more{margin-top:14px}
+.sheet-more summary{cursor:pointer;min-height:48px;display:flex;align-items:center;color:var(--muted);font-size:.95rem}
+.howto{background:var(--card);border:1.5px solid var(--ink);padding:18px 20px;margin-bottom:8px}
+.howto h3{font-family:var(--display);font-weight:400;font-size:1.25rem;margin:0 0 8px}
+.howto ol,.howto ul{padding-left:1.3em;margin-bottom:16px}
+.howto ul{margin-bottom:0}
+.howto li{font-size:.96rem;margin-bottom:6px}
+.howto b{font-weight:600}
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 20px calc(10px + env(safe-area-inset-bottom,0px))}
+.nav-in{max-width:1120px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.nav-main{display:flex;gap:12px;flex:1;max-width:640px}
+.btn{border:1.5px solid var(--ink);border-radius:14px;padding:10px 22px;min-height:54px;font-size:1.05rem;background:var(--card)}
+.btn.primary{background:var(--ink);color:var(--on-ink);flex:1;position:relative;overflow:hidden;transition:opacity .2s}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.need{font-size:.84rem;color:var(--muted);margin:6px auto 0;max-width:1120px;min-height:1.3em}
+.need span{display:block;max-width:640px;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--on-ink);padding:10px 18px;border-radius:12px;font-size:.95rem;z-index:30;max-width:90vw}
+
+@media (max-width:360px){body{font-size:17px}.top-in,.stage,.nav{padding-left:14px;padding-right:14px}.pc{width:26px;height:26px;font-size:.9rem}.mark span{display:none}}
+@media (max-width:420px){.step-txt{display:none}}
+@media (max-width:540px){.mark span{display:none}.pc{width:27px;height:27px;font-size:.92rem}}
+@media (max-width:360px){.pc{width:24px;height:24px;font-size:.82rem}}
+@media print{.top,.nav,.actions,.transfer,.toast{display:none!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="mark"><div class="cellmini" aria-hidden="true"><b>美</b></div><span>不拘一格的美</span></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="step-txt" id="stepTxt"></span>
+      <div class="cells" id="cells" role="img" aria-label="进度"></div>
+    </div>
+  </div>
+</header>
+
+<main class="stage" id="stage">
+<div class="screens">
+  <section class="screen cover" data-step="0" aria-labelledby="h0">
+    <h1 id="h0" class="sr">不拘一格的美</h1>
+    <div class="hero" id="hero" aria-hidden="true">
+      <div class="row"><div class="c"><span>不</span></div><div class="c"><span>拘</span></div><div class="c"><span>一</span></div><div class="c"><span>格</span></div><div class="c"><span>的</span></div><div class="c empty"></div></div>
+      <div class="leap">美</div>
+    </div>
+    <p class="lead">美，不一定待在格子里。</p>
+    <p class="small">前面点按钮想方向，后面自己写几个关键词把它拆细。15 分钟想完整，下笔就不卡。</p>
+    <div class="promise"><div><strong>9</strong>步</div><div><strong>9</strong>招写作方法</div><div><strong>1</strong>份能直接照着写的句子清单</div></div>
+  </section>
+
+  <section class="screen" data-step="1" hidden aria-labelledby="h1">
+    <h2 class="q" id="h1">先看清楚，这题要什么</h2>
+    <div class="key">
+      <p>"不拘一格"就是<strong>不局限于一种标准</strong>。</p>
+      <p>要写的是：<strong>一样你一开始觉得不美的东西，后来发现它也很美</strong>。</p>
+    </div>
+    <p class="sub">每组点一句更扣题的。这些是别人的例子，看懂就行。</p>
+    <div id="pairs"></div>
+  </section>
+
+  <section class="screen" data-step="2" hidden aria-labelledby="h2">
+    <h2 class="q" id="h2">在你心里，美原来是什么样子？</h2>
+    <p class="sub">点一两个。你的文章，就从打破它开始。</p>
+    <div class="chips" data-group="standards"></div>
+  </section>
+
+  <section class="screen" data-step="3" hidden aria-labelledby="h3">
+    <h2 class="q" id="h3">有什么不是这样，却让你觉得挺好？</h2>
+    <div class="reverse" id="reverse" hidden><div class="label">反过来想想</div><div class="text" id="reverseText"></div></div>
+    <p class="gl">从哪里找</p>
+    <div class="chips" data-group="cat"></div>
+    <div id="catMore" hidden>
+      <p class="gl">具体是哪个</p>
+      <div class="chips" data-group="item"></div>
+      <p class="gl" id="traitQ">它哪里不合常规</p>
+      <div class="chips" data-group="trait"></div>
+      <p class="gl">再具体一点 <small>可不填</small></p>
+      <textarea data-key="subjectNote" rows="2" placeholder="比如：外婆那件蓝外套，袖口补了两次"></textarea>
+    </div>
+  </section>
+
+  <section class="screen" data-step="4" hidden aria-labelledby="h4">
+    <h2 class="q" id="h4">第一次注意到它，你心里怎么想？</h2>
+    <p class="sub">说实话，越嫌弃越好写。</p>
+    <p class="gl">当时的想法 <small>可选两个</small></p>
+    <div class="chips" data-group="first"></div>
+    <p class="gl">你当时的反应</p>
+    <div class="chips" data-group="react"></div>
+    <p class="gl">补一句当时的情况 <small>可不填</small></p>
+    <textarea data-key="firstNote" rows="2" placeholder="那时你在哪？它是什么样子？"></textarea>
+  </section>
+
+  <section class="screen" data-step="5" hidden aria-labelledby="h5">
+    <h2 class="q" id="h5">哪一个瞬间，你觉得它其实很美？</h2>
+    <p class="sub">这是全文最重要的一段。</p>
+    <p class="gl">那是什么时候</p>
+    <div class="chips" data-group="time"></div>
+    <p class="gl">发生了什么</p>
+    <div class="chips" data-group="event"></div>
+    <p class="gl">你注意到了什么 <small>可选两个</small></p>
+    <div class="chips" data-group="details"></div>
+    <div id="detailAsk"></div>
+    <p class="gl">那一刻你</p>
+    <div class="chips" data-group="feel"></div>
+    <p class="gl">把那个细节写一句 <small>建议写，文章会好很多</small></p>
+    <textarea data-key="momentNote" rows="3" placeholder="回答上面绿色的问题就行"></textarea>
+  </section>
+
+  <section class="screen" data-step="6" hidden aria-labelledby="h6">
+    <h2 class="q" id="h6">写完它，你想说明什么？</h2>
+    <p class="gl">原来，美不一定是……的</p>
+    <div class="chips" data-group="b1"></div>
+    <p class="gl">……也可以很美</p>
+    <div class="chips" data-group="b2"></div>
+    <p class="gl">它的美，藏在</p>
+    <div class="chips" data-group="hide"></div>
+    <p class="gl">从那以后，我</p>
+    <div class="chips" data-group="after"></div>
+    <p class="gl">用自己的话再说一句 <small>可不填，试试放进"不拘一格"</small></p>
+    <textarea data-key="insightNote" rows="2" placeholder="原来……"></textarea>
+  </section>
+
+  <section class="screen" data-step="7" hidden aria-labelledby="h7">
+    <h2 class="q" id="h7">连起来读一遍，通不通？</h2>
+    <p class="sub">按钮拼出来的句子，常常前后对不上。读不通的地方，下笔时一定会卡住。</p>
+    <div class="readbox" id="readBox"></div>
+    <div id="cohere"></div>
+  </section>
+
+  <section class="screen" data-step="8" hidden aria-labelledby="h8b">
+    <h2 class="q" id="h8b">把每一段拆成几拍</h2>
+    <p class="sub">每拍只记几个关键词，不用写成句子。写作文时，一拍变成一两句话。灰色的"示范"是别人的故事，看它怎么拆，别照抄。</p>
+    <details class="demo"><summary>先看示范：关键词怎么变成句子</summary>
+      <div class="demo-b"><p class="dk">关键词：外婆拿起碗 → 拇指摸缺口 → 停住</p><p class="ds">外婆把碗端起来，拇指在那个缺口上来回摸了两下，忽然停住了。</p>
+      <p class="dk">关键词："这是你五岁那年摔的"</p><p class="ds">"这是你五岁那年摔的。"她没抬头，声音很轻。</p>
+      <p class="dn">看出来了吗？关键词管"写什么"，句子只是把它说完整，再加一点点动作或声音。</p></div>
+    </details>
+    <div id="beats"></div>
+  </section>
+
+  <section class="screen" data-step="9" hidden aria-labelledby="h9">
+    <h2 class="q" id="h9">最后，自己查三件事</h2>
+    <p class="sub">哪项是"还没有"，就回去补一下。</p>
+    <div id="checks"></div>
+  </section>
+
+  <section class="screen" data-step="10" hidden aria-labelledby="h10">
+    <h2 class="sr" id="h10">你的提纲和句子清单</h2>
+    <div class="final-head">
+      <div class="done-seal" id="doneSeal" aria-hidden="true">成</div>
+      <div><p class="done-time" id="doneTime"></p><p class="sub" style="margin:0">照着句子清单写：一拍变成一两句话。先写"那一刻"。</p></div>
+    </div>
+    <div class="final-grid">
+    <div class="final-l">
+    <div class="sheet final" id="beatSheet"></div>
+    <details class="sheet-more"><summary>看四段提纲</summary><div class="sheet final" id="finalSheet"></div></details>
+    <div class="actions">
+      <button class="btn primary" type="button" id="copyBtn" style="flex:0 1 auto">复制句子清单</button>
+      <button class="btn" type="button" id="restartBtn">重新开始</button>
+    </div>
+    </div>
+    <div class="final-r">
+    <div class="howto">
+      <h3>怎么写</h3>
+      <ol>
+        <li><b>先写"那一刻"。</b>细节最多、最有把握，写出来以后，其他段就顺了。</li>
+        <li><b>再写"第一眼"，然后开头，最后结尾。</b></li>
+        <li><b>一段 10 分钟左右，写完先不回头改。</b>整篇写完再统一看一遍。</li>
+      </ol>
+      <h3>每写完一段，问自己</h3>
+      <ul>
+        <li>有没有一个看得见的动作？</li>
+        <li>有没有一句原话，或者一个具体的颜色、声音？</li>
+        <li>有没有把"很美、很感动"换成了细节？</li>
+      </ul>
+    </div>
+    <h3 class="h-kit">今天你用了这 9 招</h3>
+    <p class="sub" style="margin:0">以后不管遇到什么题，都按这个顺序走一遍。</p>
+    <ol class="kit" id="kit"></ol>
+    <details class="transfer"><summary>换一道题试试：《这里也有乐趣》</summary><ol id="transfer"></ol></details>
+    </div>
+    </div>
+  </section>
+</div>
+
+<aside class="draft-panel" aria-label="你的提纲草稿">
+  <div class="sheet" id="draftSheet"></div>
+</aside>
+</main>
+
+<nav class="nav" aria-label="翻页">
+  <div class="nav-in"><div class="nav-main">
+    <button class="btn" type="button" id="prevBtn">上一步</button>
+    <button class="btn primary" type="button" id="nextBtn">开始</button>
+  </div></div>
+  <p class="need" aria-live="polite"><span id="need"></span></p>
+</nav>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  'use strict';
+  const KEY = 'bujuyige_v2';
+  const TOTAL = 9; const FINAL = 10;
+  const $ = id => document.getElementById(id);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const el = (tag, cls, text) => { const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
+
+  const PAIRS = [
+    { a:'公园里的樱花开得整整齐齐，粉成一片，真美。', b:'楼下修车师傅满手油污，修好车时手上那一下利落，也很美。', right:'b',
+      why:'樱花是大家公认的美。修车师傅的美藏在不起眼的地方，这才扣住"不拘一格"。' },
+    { a:'同桌的字歪歪扭扭，可每个字都像有自己的脾气。', b:'美有很多种：有花的美，有山的美，还有人的美……', right:'a',
+      why:'列清单最容易写平，里面没有一件具体的事。' },
+    { a:'我觉得那只碗很美，我很喜欢它。', b:'那只碗缺了个口，外婆用了十几年，缺口早被磨得光滑。', right:'b',
+      why:'只说"很美"没有用，要写出它哪里不一样。' }
+  ];
+  const REVERSE = {
+    '整齐':'有什么乱乱的、不整齐的东西，你其实挺喜欢？','漂亮':'有什么不好看的东西，你却舍不得？',
+    '标准':'有什么做法不标准，结果却很好？','新的':'有什么旧东西，越旧越有味道？',
+    '完美':'有什么有缺口、有毛病的东西，反而让你记住了？','安静':'有没有一种吵吵闹闹、热热闹闹的美？',
+    '高级':'有什么便宜、普通的东西，在你眼里很珍贵？','规规矩矩':'有什么不按规矩来的人或事，反而让你佩服？'
+  };
+  const STANDARDS = Object.keys(REVERSE);
+  const CATS = {
+    '一个人':{ items:['我的外婆','我的外公','我的奶奶','我的爷爷','我妈妈','我爸爸','班上一个同学','一位老师','小区里的一位邻居','路边一位干活的师傅'], traitQ:'这个人哪里不合常规',
+      traits:['做事从不按规矩来','样子很普通，一点也不讲究','一双手很粗糙','说话很直，有点土','有一个奇怪的爱好','做的东西不怎么精致'], b2:['普通的人','不讲究的人','不按规矩来的人','一双粗糙的手'] },
+    '一样东西':{ items:['家里一件旧衣服','一只用了很多年的碗','一个旧书包','一样家人亲手做的东西','一本翻旧了的书','一个旧玩具','一盆长歪了的植物','一张拍糊了的照片'], traitQ:'它哪里不合常规',
+      traits:['已经很旧了','有个缺口或裂痕','做得歪歪扭扭','颜色很土','缺了一块，不成套','长得怪怪的'], b2:['旧东西','有缺口的东西','不精致的东西','不完美的东西'] },
+    '一个地方':{ items:['一条老弄堂','家附近的菜场','家里乱乱的阳台','一家路边小吃店','学校一个不起眼的角落','爷爷奶奶家','一家修车铺'], traitQ:'这个地方哪里不合常规',
+      traits:['又旧又破','乱糟糟的','吵吵闹闹的','有点脏','平时没什么人注意','一点都不高级'], b2:['乱糟糟的地方','旧旧的地方','吵吵闹闹的地方','不起眼的角落'] },
+    '我自己':{ items:['我的字','我画的一幅画','我的一个解题方法','我的一个爱好','我做的一道菜','我的一次打扮'], traitQ:'它哪里不合常规',
+      traits:['一点都不标准','和别人都不一样','被人笑过','不太好看','没按老师教的来'], b2:['不标准的自己','和别人不一样的自己','不完美的作品'] }
+  };
+  const FIRST = ['觉得它很土','觉得它很丑','觉得乱糟糟','觉得不讲究','有点嫌弃','根本没注意它','觉得很奇怪','有点不好意思'];
+  const REACT = ['皱了皱眉','躲得远远的','在心里笑话它','想让它换掉','假装没看见','问为什么不换个新的'];
+  const TIME = ['一个普通的傍晚','一个下雨天','过年过节的时候','我生病的时候','放学路上','我遇到难题的时候','它差点被扔掉的时候','整理东西的时候'];
+  const EVENT = ['我看见它被认真对待','它帮了我一个忙','我听到了它背后的故事','我发现别人很喜欢它','我自己试了一次','它不见了，我才发现它重要'];
+  const PERSON_TIME = ['一个普通的傍晚','一个下雨天','过年过节的时候','我生病的时候','放学路上','我遇到难题的时候','我误会他的时候','整理东西的时候'];
+  const PERSON_EVENT = ['我看见他认真做一件事','他帮了我一个忙','我听到了他的故事','我发现别人很佩服他','我学着他做了一次','他不在身边时，我才想起他的好'];
+  const DETAILS = { '一双手':'那双手是什么样子？正在做什么？','一个眼神':'那个眼神看向哪里？像什么？','一句话':'那句话的原话是什么？','一个动作':'把这个动作放慢，分成几步？',
+    '一种声音':'是什么声音？像什么？','一种气味':'是什么味道？让你想起什么？','一种颜色':'是什么颜色？和周围有什么不一样？','一道痕迹':'这道痕迹是怎么来的？' };
+  const FEEL = ['心里一热','愣住了','有点惭愧','鼻子一酸','打心底佩服','忍不住笑了'];
+  const HIDE = ['用心里','时间里','认真里','真诚里','与众不同里','人和人的情分里','普普通通的日子里'];
+  const AFTER = ['会多看它一眼','不再急着说一样东西丑','学着换个眼光看人','更珍惜它','敢做和别人不一样的自己'];
+  const CHECKS = [
+    { q:'我写的是一件具体的事，不是"美有很多种"的清单。', back:3 },
+    { q:'我写出了它和"标准的美"哪里不一样。', back:4 },
+    { q:'我有一个让我改变看法的具体瞬间。', back:5 }
+  ];
+  const METHODS = {
+    1:['眼','圈题眼','先找出题目里最要紧的那个词，弄懂它要什么、不要什么，再动笔。','以后每道题，先圈一个词，问自己：这个词把什么排除在外了？'],
+    2:['靶','先立一个靶子','开头先写你原来的想法，后面才有东西可以推翻，文章就有了转折。','题目里有"原来""没想到""也""发现"这类词时，最好用。'],
+    3:['屉','四个抽屉找素材','想不出来，就去人、东西、地方、自己这四个抽屉里翻；还不行，就把常见答案反过来想。','任何题目都能用这四个抽屉。'],
+    4:['抑','先抑后扬','先写你嫌弃它、看不上它，再写你怎么改变了看法。前面压得越低，后面越有力量。','写人、写物、写成长，都可以用。'],
+    5:['慢','慢镜头','只抓一个瞬间，把它放慢：一双手、一句原话、一道痕迹。一个真实的细节，胜过十个形容词。','以后每篇作文，至少要有一个慢镜头。'],
+    6:['收','结尾三句话','原来……（看法变了），……藏在……（道理在哪），从那以后我……（我变了）。最后再扣一次题目。','大部分记叙文的结尾，都能这样收。'],
+    7:['通','连起来读一遍','列完提纲先从头读一遍：主角是不是同一个？那一刻是不是只发生了一件事？读不通的地方，写的时候一定会卡住。','以后每次列完提纲，都先读一遍再动笔。'],
+    8:['拆','拆节拍','一段话拆成四五拍，每拍只记几个关键词。写的时候一拍变成一两句话，就不会对着空白发呆。','这是从"会想"到"会写"的桥，任何作文都能用。'],
+    9:['查','交前三查','有没有一件具体的事？有没有扣住题目里的关键词？有没有一个让你转变的瞬间？','每篇作文写完，都查这三件事。']
+  };
+  const TRANSFER = [
+    ['圈题眼','关键词是"也"。说明这里一般被认为没意思。'],
+    ['立靶子','以前我觉得排队、做家务、上补习班一点意思都没有。'],
+    ['找素材','去"一个地方"的抽屉里翻，比如菜场、医院候诊室、地铁车厢。'],
+    ['先抑后扬','一开始我只想快点离开那里。'],
+    ['慢镜头','卖菜阿姨一边找零，一边跟老顾客聊天，顺手多塞了一把葱。'],
+    ['结尾三句话','原来乐趣不挑地方，它藏在人和人的来往里。从那以后，我开始留心身边不起眼的地方。'],
+    ['交前三查','有具体的事，扣住了"也"，有转变的瞬间。']
+  ];
+
+  /* ---------- state ---------- */
+  const blank = () => ({ step:0, last:0, pairs:{}, checks:{}, startedAt:null, finishedAt:null, standards:[], first:[], details:[] });
+  let s = blank();
+  try { const raw = localStorage.getItem(KEY); if (raw) s = Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} };
+  if (!s.v4) { if (s.last>=7) { s.last=7; s.finishedAt=null; } if (s.step>=7) s.step=0; s.v4=1; save(); }
+
+  const isP = () => s.cat==='一个人';
+  const pron = () => isP() ? '他' : '它';
+  const pr = arr => isP() ? arr.map(x=>x.replace(/它/g,'他')) : arr;
+  const OTHER = '__other__';
+  const GROUPS = {
+    standards:{ opts:()=>STANDARDS, multi:2 },
+    cat:{ opts:()=>Object.keys(CATS), onChange:()=>{ ['item','trait','b2','time','event','react','after'].forEach(k=>{s[k]='';s[k+'_other']='';}); s.first=[]; } },
+    item:{ opts:()=>s.cat?CATS[s.cat].items:[], other:'其他，我自己写' },
+    trait:{ opts:()=>s.cat?CATS[s.cat].traits:[], other:'其他，我自己写' },
+    first:{ opts:()=>pr(FIRST), multi:2, other:'其他' },
+    react:{ opts:()=>pr(REACT), other:'其他' },
+    time:{ opts:()=>isP()?PERSON_TIME:TIME, other:'其他' },
+    event:{ opts:()=>isP()?PERSON_EVENT:EVENT, other:'其他' },
+    details:{ opts:()=>Object.keys(DETAILS), multi:2 },
+    feel:{ opts:()=>FEEL, other:'其他' },
+    b1:{ opts:()=>STANDARDS, other:'其他' },
+    b2:{ opts:()=>s.cat?CATS[s.cat].b2:[], other:'其他' },
+    hide:{ opts:()=>HIDE, other:'其他' },
+    after:{ opts:()=>pr(AFTER), other:'其他' }
+  };
+  function v(key){
+    const g=GROUPS[key], val=s[key];
+    if (g && g.multi) return (val||[]).map(x=>x===OTHER?(s[key+'_other']||'').trim():x).filter(Boolean);
+    if (val===OTHER) return (s[key+'_other']||'').trim();
+    return val||'';
+  }
+  const filled = key => { const x=v(key); return Array.isArray(x)?x.length>0:!!x; };
+
+  let toastT;
+  function toast(m){ const t=$('toast'); t.textContent=m; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,1900); }
+
+  /* ---------- chip groups ---------- */
+  let lastStamp=null;
+  function renderGroup(key){
+    const box=document.querySelector(`[data-group="${key}"]`); if(!box) return;
+    const g=GROUPS[key]; box.innerHTML='';
+    box.setAttribute('role','group');
+    const cur = g.multi ? (s[key]||[]) : s[key];
+    const isOn = o => g.multi ? cur.includes(o) : cur===o;
+    const all = g.other ? [...g.opts(), OTHER] : [...g.opts()];
+    all.forEach(o=>{
+      const b=document.createElement('button'); b.type='button';
+      b.className='chip'+(o===OTHER?' other':'');
+      if (lastStamp && lastStamp[0]===key && lastStamp[1]===o && isOn(o)) b.classList.add('stamp');
+      b.textContent = o===OTHER ? g.other : o;
+      b.setAttribute('aria-pressed', isOn(o)?'true':'false');
+      b.onclick=()=>{
+        if (g.multi){ let arr=[...(s[key]||[])]; if (arr.includes(o)) arr=arr.filter(x=>x!==o); else { arr.push(o); if(arr.length>g.multi) arr.shift(); } s[key]=arr; }
+        else s[key] = s[key]===o ? '' : o;
+        if (g.onChange) g.onChange();
+        lastStamp=[key,o]; save(); refresh(); lastStamp=null;
+        if (o===OTHER){ const w=box.nextElementSibling; if (w && !w.hidden) w.querySelector('input').focus(); }
+      };
+      box.appendChild(b);
+    });
+    let wrap = box.nextElementSibling;
+    if (!(wrap && wrap.classList.contains('other-in'))){
+      wrap=document.createElement('div'); wrap.className='other-in';
+      const inp=document.createElement('input'); inp.type='text'; inp.placeholder='写在这里'; inp.setAttribute('aria-label','自己写');
+      inp.addEventListener('input',()=>{ s[key+'_other']=inp.value; save(); refreshLight(); });
+      wrap.appendChild(inp); box.after(wrap);
+    }
+    wrap.hidden = !(g.other && isOn(OTHER));
+    const inp=wrap.querySelector('input'); if (document.activeElement!==inp) inp.value=s[key+'_other']||'';
+  }
+
+  /* ---------- pairs / checks ---------- */
+  function buildPairs(){
+    const box=$('pairs'); box.innerHTML='';
+    PAIRS.forEach((p,i)=>{
+      const w=document.createElement('div'); w.className='pair'; w.setAttribute('role','group'); w.setAttribute('aria-label',`第 ${i+1} 组`);
+      const h=document.createElement('div'); h.className='pair-q'; h.textContent=`第 ${i+1} 组`; w.appendChild(h);
+      ['a','b'].forEach(k=>{
+        const b=document.createElement('button'); b.type='button'; b.className='opt '+(k===p.right?'right':'wrong')+(s.pairs[i]===k?' picked':'');
+        b.textContent=p[k]; b.setAttribute('aria-pressed', s.pairs[i]===k?'true':'false');
+        b.onclick=()=>{ s.pairs[i]=k; save(); buildPairs(); updateNav(); };
+        w.appendChild(b);
+      });
+      if (s.pairs[i]){ const ok=s.pairs[i]===p.right; const f=document.createElement('p'); f.className='feedback'+(ok?'':' no'); f.textContent=(ok?'对。':'再看看另一句。')+p.why; w.appendChild(f); }
+      box.appendChild(w);
+    });
+  }
+  function buildChecks(){
+    const box=$('checks'); box.innerHTML='';
+    CHECKS.forEach((c,i)=>{
+      const d=document.createElement('div'); d.className='check';
+      const p=document.createElement('p'); p.textContent=c.q; d.appendChild(p);
+      const yn=document.createElement('div'); yn.className='yn'; yn.setAttribute('role','group');
+      [['yes','做到了'],['no','还没有']].forEach(([val,l])=>{
+        const b=document.createElement('button'); b.type='button'; b.textContent=l;
+        b.setAttribute('aria-pressed', s.checks[i]===val?'true':'false');
+        b.onclick=()=>{ s.checks[i]=val; save(); buildChecks(); updateNav(); };
+        yn.appendChild(b);
+      });
+      d.appendChild(yn);
+      if (s.checks[i]==='no'){ const f=document.createElement('p'); f.className='fix'; const b=document.createElement('button'); b.type='button'; b.textContent=`回到第 ${c.back} 步补一下`; b.onclick=()=>go(c.back); f.appendChild(b); d.appendChild(f); }
+      box.appendChild(d);
+    });
+  }
+
+  /* ---------- methods ---------- */
+  Object.entries(METHODS).forEach(([n,[seal,name,body,future]])=>{
+    const sec=document.querySelector(`.screen[data-step="${n}"]`);
+    const d=document.createElement('aside'); d.className='method'; d.setAttribute('aria-label',`第 ${n} 招`);
+    d.innerHTML='<div class="seal" aria-hidden="true"></div><div><p class="mh"></p><p class="mb"></p><p class="mf"></p></div>';
+    d.querySelector('.seal').textContent=seal;
+    d.querySelector('.mh').textContent=`第 ${n} 招：${name}`;
+    d.querySelector('.mb').textContent=body;
+    d.querySelector('.mf').textContent='以后：'+future;
+    sec.appendChild(d);
+  });
+  Object.values(METHODS).forEach(([seal,name,body])=>{
+    const li=document.createElement('li'); const i=document.createElement('i'); i.textContent=seal; i.setAttribute('aria-hidden','true');
+    const b=document.createElement('b'); b.textContent=name; const sp=document.createElement('span'); sp.textContent=body;
+    li.append(i,b,sp); $('kit').appendChild(li);
+  });
+  TRANSFER.forEach(([k,t])=>{ const li=document.createElement('li'); const b=document.createElement('b'); b.textContent=k+'：'; li.append(b,t); $('transfer').appendChild(li); });
+
+  /* ---------- draft text ---------- */
+  const join = arr => arr.length>1 ? arr.slice(0,-1).join('、')+'，又'+arr[arr.length-1] : (arr[0]||'');
+  const G = '……';
+  const focusName = () => (s.cnt==='many' && (s.focus||'').trim()) ? s.focus.trim() : '';
+  const subj = () => focusName() || v('item') || pron();
+  function paras(){
+    const std=v('standards').join('、');
+    const first=v('first'), det=v('details');
+    const note = k => (s[k]||'').trim();
+    const p1 = std ? `以前，我一直觉得美就应该是${std}的。` : '';
+    let p2 = '';
+    if (v('item')) {
+      p2 = v('item') + (v('trait')?'，'+v('trait'):'') + '。';
+      if (focusName()) p2 += `我最想写的，是其中的${focusName()}。`;
+      if (first.length) p2 += `第一次注意到${pron()}时，我${join(first)}` + (v('react')?`，${v('react')}`:'') + '。';
+      if (note('subjectNote')) p2 += '\n' + note('subjectNote');
+      if (note('firstNote')) p2 += '\n' + note('firstNote');
+    }
+    let p3 = '';
+    if (v('time')||v('event')) {
+      p3 = [v('time'), (s.coh==='no' && (s.eventFix||'').trim()) ? s.eventFix.trim() : v('event')].filter(Boolean).join('，') + '。';
+      if (det.length) p3 += `我注意到了${det.map(d=>(s.detailAns&&(s.detailAns[d]||'').trim())?`${d}：${s.detailAns[d].trim()}`:d).join('；')}。`;
+      if (v('feel')) p3 += `那一刻，我${v('feel')}。`;
+      if (note('momentNote')) p3 += '\n' + note('momentNote');
+    }
+    let p4 = '';
+    if (v('b1')&&v('b2')) p4 += `原来，美不一定是${v('b1')}的，${v('b2')}也可以很美。`;
+    if (v('hide')) p4 += `${focusName()||pron()}的美，藏在${v('hide')}。`;
+    if (v('after')) p4 += `从那以后，我${v('after')}。`;
+    if (note('insightNote')) p4 += '\n' + note('insightNote');
+    return [
+      { h:'开头', len:'约 100 字', text:p1, ghost:'第 2 步会写在这里', tip:'你为什么会这样想？举一个你觉得"标准的美"的例子。', step:2 },
+      { h:'第一眼', len:'约 150 字', text:p2, ghost:'第 3、4 步会写在这里', tip:`${pron()}具体是什么样子？和"${std||'标准的美'}"差在哪？`, step:[3,4] },
+      { h:'那一刻', len:'约 250 字', text:p3, ghost:'第 5 步会写在这里', tip:det.map(d=>DETAILS[d]).join(' ')||'那一刻你看到、听到了什么？', step:[5,7] },
+      { h:'结尾', len:'约 100 字', text:p4, ghost:'第 6 步会写在这里', tip:'最后一句试着用上"不拘一格"。', step:6 }
+    ];
+  }
+  function renderSheet(el, final){
+    el.innerHTML='';
+    const head=document.createElement('div'); head.className='sheet-h';
+    if (final){
+      const row=document.createElement('div'); row.className='mini-cells'; row.setAttribute('role','img'); row.setAttribute('aria-label','不拘一格的美');
+      [...'不拘一格的美'].forEach((ch,i)=>{ const c=document.createElement('div'); c.className='c'+(i===5?' out':''); const sp=document.createElement('span'); sp.textContent=ch; c.appendChild(sp); row.appendChild(c); });
+      const sp=document.createElement('span'); sp.textContent='我的提纲';
+      head.append(row,sp);
+    } else {
+      const b=document.createElement('b'); b.textContent='你的提纲，正在长出来';
+      const sp=document.createElement('span'); sp.textContent='每点一下，这里就多一句';
+      head.append(b,sp);
+    }
+    el.appendChild(head);
+    paras().forEach(p=>{
+      const d=document.createElement('div'); d.className='para'+(p.text?' live':'');
+      const steps=[].concat(p.step); if(!final && steps.includes(s.step)) d.classList.add('focus');
+      const ph=document.createElement('div'); ph.className='ph'; const a=document.createElement('span'); a.textContent=p.h; const l=document.createElement('span'); l.textContent=p.len; ph.append(a,l);
+      const t=document.createElement('p'); if(p.text) t.textContent=p.text; else { t.textContent=final?G:p.ghost; t.className='ghost'; }
+      d.append(ph,t);
+      if (final){ const tip=document.createElement('p'); tip.className='tip'; tip.textContent=p.tip; d.appendChild(tip); }
+      el.appendChild(d);
+    });
+  }
+  function renderInlineDraft(){
+    document.querySelectorAll('.draft-inline').forEach(x=>x.remove());
+    const map={2:0,3:1,4:1,5:2,6:3};
+    if (!(s.step in map)) return;
+    const p=paras()[map[s.step]]; if(!p.text) return;
+    const sec=document.querySelector(`.screen[data-step="${s.step}"]`);
+    const d=document.createElement('div'); d.className='draft-inline';
+    d.innerHTML='<div class="dl"></div><p></p>'; d.querySelector('.dl').textContent=`这一段会写成（${p.h}）`; d.querySelector('p').textContent=p.text;
+    sec.insertBefore(d, sec.querySelector('.method'));
+  }
+
+  /* ---------- 通：连起来读 ---------- */
+  function buildCohere(){
+    const P=paras(); const rb=$('readBox'); rb.innerHTML='';
+    [[1,'第一眼'],[2,'那一刻']].forEach(([i,h])=>{ rb.appendChild(el('div','rl',h)); rb.appendChild(el('p','rt',P[i].text||'……')); });
+    const box=$('cohere'); box.innerHTML='';
+    // Q1 主角
+    const q1=el('div','cq'); q1.append(el('p','cqt','1. 你的主角是"一个"，还是"一堆、好几个"？'), el('p','cqh','慢镜头只能对准一个。写一堆，就哪个都写不细。'));
+    q1.appendChild(ynRow('cnt',[['one','就一个'],['many','一堆 / 好几个']]));
+    if (s.cnt==='many') q1.appendChild(field('focus','那就聚焦到其中一个。是哪一个？','比如：那堆碗里，缺口最大的那只'));
+    box.appendChild(q1);
+    // Q2 一件事
+    const q2=el('div','cq'); q2.append(el('p','cqt','2. 读上面的"那一刻"：是不是只发生了一件事，前后对得上？'), el('p','cqh','检查办法：看有没有两件事挤在一起，或者互相打架，比如"差点被扔掉"又"不见了"。'));
+    q2.appendChild(ynRow('coh',[['ok','读得通'],['no','好像不通 / 有两件事']]));
+    if (s.coh==='no') q2.appendChild(field('eventFix','用一句话说：那一刻到底发生了什么？只写一件事。','比如：外婆要把旧碗都收进纸箱'));
+    box.appendChild(q2);
+    // Q3 细节说具体
+    const det=v('details');
+    if (det.length){
+      const q3=el('div','cq'); q3.append(el('p','cqt','3. 你选的细节，具体是什么样？'), el('p','cqh','"一种颜色"不算细节，"洗得发白的粉色"才算。几个字就够。'));
+      s.detailAns=s.detailAns||{};
+      det.forEach(d=>{ const f=el('div','cqf'); const id='da-'+d; const lb=el('label',null,`${d}：${DETAILS[d]}`); lb.htmlFor=id;
+        const inp=el('input'); inp.type='text'; inp.id=id; inp.value=s.detailAns[d]||''; inp.placeholder='几个字就行';
+        inp.addEventListener('input',()=>{ s.detailAns[d]=inp.value; save(); refreshRead(); updateNav(); });
+        f.append(lb,inp); q3.appendChild(f); });
+      box.appendChild(q3);
+    }
+  }
+  function refreshRead(){ const P=paras(); const ps=$('readBox').querySelectorAll('p.rt'); if(ps[0]) ps[0].textContent=P[1].text||'……'; if(ps[1]) ps[1].textContent=P[2].text||'……'; renderSheet($('draftSheet'),false); }
+  function ynRow(key,opts){
+    const r=el('div','yn'); r.setAttribute('role','group');
+    opts.forEach(([val,l])=>{ const b=el('button',null,l); b.type='button'; b.setAttribute('aria-pressed',s[key]===val?'true':'false');
+      b.onclick=()=>{ s[key]=val; save(); buildCohere(); refreshLight(); }; r.appendChild(b); });
+    return r;
+  }
+  function field(key,label,ph){
+    const f=el('div','cqf'); const id='f-'+key; const lb=el('label',null,label); lb.htmlFor=id;
+    const inp=el('input'); inp.type='text'; inp.id=id; inp.value=s[key]||''; inp.placeholder=ph;
+    inp.addEventListener('input',()=>{ s[key]=inp.value; save(); refreshRead(); updateNav(); });
+    f.append(lb,inp); return f;
+  }
+
+  /* ---------- 拆：节拍 ---------- */
+  function beatDefs(){
+    const std=v('standards').join('、')||'整齐';
+    const dets=v('details');
+    const detPre = dets.map(d=>(s.detailAns&&(s.detailAns[d]||'').trim())||'').filter(Boolean).join('，');
+    const endPre = (v('b1')&&v('b2')) ? `原来美不一定是${v('b1')}的，${v('b2')}也可以很美` : '';
+    return [
+      { h:'开头', len:100, beats:[
+        {k:'o1', q:`你心里"${std}"的美，是在哪里见过的？`, ex:'家具店里的样板间'},
+        {k:'o2', q:'那个"标准的美"具体长什么样？说一个画面', ex:'床单一条褶都没有，枕头排成一排'},
+        {k:'o3', q:'可你身边，偏偏有个正好相反的什么？', ex:'我家碗柜里那只缺口碗', pre:v('item')}
+      ]},
+      { h:'第一眼', len:150, beats:[
+        {k:'f1', q:`${subj()}是什么样子？说两个具体的地方（数量、颜色、摆法）`, ex:'碗沿有个黄豆大的缺口，釉色发黄'},
+        {k:'f2', q:`它哪里不"${std}"？`, ex:'和新买的白瓷碗摆在一起，像个老人', pre:v('trait')},
+        {k:'f3', q:'当时谁说过它不好？原话是什么？没人说，就写你自己怎么想', ex:'我说："这碗该扔了吧。"'},
+        {k:'f4', q:'你当时做了什么？', ex:'吃饭时故意挑别的碗', pre:v('react')}
+      ]},
+      { h:'那一刻', len:250, key:true, beats:[
+        {k:'m1', q:'那天在哪里，是什么情况？', ex:'周末大扫除，厨房', pre:s.coh==='ok'?v('time'):''},
+        {k:'m2', q:'那一刻发生了什么？只写一件事', ex:'外婆要把旧碗都收进纸箱', pre:(s.coh==='no'&&(s.eventFix||'').trim())?s.eventFix.trim():''},
+        {k:'m3', q:'慢镜头：把一个动作拆成两三个小动作，用箭头连起来', ex:'外婆拿起碗 → 拇指摸缺口 → 停住'},
+        {k:'m4', q:`你注意到的细节${dets.length?'（'+dets.join('、')+'）':''}，具体什么样？`, ex:'缺口被磨得发亮', pre:detPre},
+        {k:'m5', q:'有没有一句原话，或者你心里冒出的一句话？', ex:'"这是你五岁那年摔的。"'},
+        {k:'m6', q:'你的反应：做了什么动作？', ex:'我伸手把碗接了过来', pre:v('feel')?('我'+v('feel')):''}
+      ]},
+      { h:'结尾', len:100, beats:[
+        {k:'e1', q:'现在你怎么看它？用"原来"开头', ex:'原来美不一定是新的', pre:endPre},
+        {k:'e2', q:`它的美，具体藏在${subj()}的哪里？`, ex:'藏在那道磨亮的缺口里'},
+        {k:'e3', q:'从那以后，你做了什么不一样的事？写一个动作', ex:'我每次吃饭都挑那只碗', pre:v('after')?('我'+v('after')):''},
+        {k:'e4', q:'最后一句，怎么用上"不拘一格"？', ex:'美，本来就不拘一格', opt:true}
+      ]}
+    ];
+  }
+  function buildBeats(){
+    s.beats=s.beats||{};
+    const defs=beatDefs();
+    defs.forEach(g=>g.beats.forEach(b=>{ if(s.beats[b.k]===undefined && b.pre) s.beats[b.k]=b.pre; }));
+    save();
+    const box=$('beats'); box.innerHTML='';
+    defs.forEach(g=>{
+      const gr=el('div','bgroup'+(g.key?' bkey':''));
+      const h=el('div','bgh'); const hb=el('b',null,g.h); if(g.key) hb.appendChild(el('em',null,'先写这段'));
+      h.append(hb, el('span',null,`约 ${g.len} 字 · ${g.beats.length} 拍`)); gr.appendChild(h);
+      g.beats.forEach((b,i)=>{
+        const row=el('div','beat'+((s.beats[b.k]||'').trim()?' done':''));
+        const n=el('span','bn',String(i+1)); n.setAttribute('aria-hidden','true');
+        const body=el('div'); const id='b-'+b.k;
+        const lb=el('label',null,b.q); lb.htmlFor=id; if(b.opt) lb.appendChild(el('small',null,'可不填'));
+        const inp=el('input'); inp.type='text'; inp.id=id; inp.value=s.beats[b.k]||''; inp.placeholder='几个关键词';
+        inp.addEventListener('input',()=>{ s.beats[b.k]=inp.value; row.classList.toggle('done',!!inp.value.trim()); save(); updateNav(); });
+        body.append(lb,inp,el('p','ex',b.ex)); row.append(n,body); gr.appendChild(row);
+      });
+      box.appendChild(gr);
+    });
+  }
+  function beatsLeft(){ s.beats=s.beats||{}; return beatDefs().flatMap(g=>g.beats).filter(b=>!b.opt && !(s.beats[b.k]||'').trim()).length; }
+  function renderBeatSheet(){
+    const el0=$('beatSheet'); el0.innerHTML='';
+    const head=el('div','sheet-h'); const row=el('div','mini-cells'); row.setAttribute('role','img'); row.setAttribute('aria-label','不拘一格的美');
+    [...'不拘一格的美'].forEach((ch,i)=>{ const c=el('div','c'+(i===5?' out':'')); c.appendChild(el('span',null,ch)); row.appendChild(c); });
+    head.append(row, el('span',null,'句子清单：一行变成一两句话')); el0.appendChild(head);
+    beatDefs().forEach(g=>{
+      const d=el('div','list-para'+(g.key?' bkey':'')); const ph=el('div','ph'); ph.append(el('b',null,g.h+(g.key?'（先写）':'')), el('span',null,`约 ${g.len} 字`));
+      const ol=el('ol'); g.beats.forEach(b=>{ const t=(s.beats&&s.beats[b.k]||'').trim(); if(t) ol.appendChild(el('li',null,t)); });
+      d.append(ph,ol); el0.appendChild(d);
+    });
+  }
+
+  /* ---------- outline & copy ---------- */
+  function buildFinal(){
+    renderSheet($('finalSheet'), true); renderBeatSheet();
+    const mins = s.startedAt ? Math.max(1,Math.round(((s.finishedAt||Date.now())-s.startedAt)/60000)) : 0;
+    $('doneTime').textContent = mins ? `想清楚了，用了 ${mins} 分钟。` : '想清楚了。';
+    const seal=$('doneSeal'); seal.classList.remove('play'); void seal.offsetWidth; seal.classList.add('play');
+  }
+  $('copyBtn').onclick=async()=>{
+    const list='不拘一格的美 · 句子清单（一行变成一两句话，先写"那一刻"）\n\n'+beatDefs().map(g=>`【${g.h}】（约 ${g.len} 字）\n`+g.beats.map(b=>(s.beats&&s.beats[b.k]||'').trim()).filter(Boolean).map((t,i)=>`${i+1}. ${t}`).join('\n')).join('\n\n');
+    const txt=list+'\n\n——\n四段提纲\n\n'+paras().map(p=>`【${p.h}】（${p.len}）\n${p.text||G}`).join('\n\n')
+      +'\n\n写作九招\n'+Object.values(METHODS).map(([,n,b],i)=>`${i+1}. ${n}：${b}`).join('\n');
+    try { await navigator.clipboard.writeText(txt); toast('已复制，可以发给爸爸'); }
+    catch(e){ const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');toast('已复制');}catch(_){toast('复制没成功，截个图也行');} ta.remove(); }
+  };
+  $('restartBtn').onclick=()=>{ if(confirm('清空这次的选择，重新开始？')){ s=blank(); save(); fillText(); go(0); } };
+
+  /* ---------- text areas ---------- */
+  function fillText(){ document.querySelectorAll('[data-key]').forEach(el=>{ el.value=s[el.dataset.key]||''; }); }
+  document.querySelectorAll('[data-key]').forEach(el=>el.addEventListener('input',()=>{ s[el.dataset.key]=el.value; save(); refreshLight(); }));
+
+  /* ---------- refresh ---------- */
+  function refreshLight(){
+    if (s.step>=2 && s.step<=9) renderSheet($('draftSheet'), false);
+    renderInlineDraft();
+    updateNav();
+  }
+  function refresh(){
+    const st=s.step;
+    if (st===2) renderGroup('standards');
+    if (st===3){
+      const std=v('standards')[0]; $('reverse').hidden=!std; if(std) $('reverseText').textContent=REVERSE[std]||'';
+      renderGroup('cat'); $('catMore').hidden=!s.cat;
+      if (s.cat){ $('traitQ').textContent=CATS[s.cat].traitQ; renderGroup('item'); renderGroup('trait'); }
+    }
+    if (st===4){ $('h4').textContent=`第一次注意到${pron()}，你心里怎么想？`; ['first','react'].forEach(renderGroup); }
+    if (st===5){
+      $('h5').textContent=`哪一个瞬间，你觉得${pron()}其实很美？`;
+      ['time','event','details','feel'].forEach(renderGroup);
+      const box=$('detailAsk'); box.innerHTML='';
+      v('details').forEach(d=>{ const p=document.createElement('p'); p.className='ask'; p.textContent=DETAILS[d]; box.appendChild(p); });
+    }
+    if (st===6){ if (!s.b1 && v('standards')[0]) s.b1=v('standards')[0]; ['b1','b2','hide','after'].forEach(renderGroup); }
+    refreshLight();
+  }
+
+  /* ---------- nav ---------- */
+  function need(){
+    switch(s.step){
+      case 1: return Object.keys(s.pairs).length===PAIRS.length?'':'三组都点一下';
+      case 2: return filled('standards')?'':'至少点一个';
+      case 3: return !s.cat?'先点"从哪里找"':!filled('item')?'点一个具体的':!filled('trait')?'再点一下哪里不合常规':'';
+      case 4: return !filled('first')?'点一下你当时的想法':'';
+      case 5: return !filled('time')?'点一下是什么时候':!filled('event')?'点一下发生了什么':!filled('details')?'点一下你注意到了什么':!filled('feel')?'点一下那一刻的感受':'';
+      case 6: return filled('b1')&&filled('b2')&&filled('hide')?'':'前三行各点一个';
+      case 7: {
+        if(!s.cnt) return '先回答第 1 题';
+        if(s.cnt==='many' && !(s.focus||'').trim()) return '写下你要聚焦的那一个';
+        if(!s.coh) return '读一读"那一刻"，回答第 2 题';
+        if(s.coh==='no' && !(s.eventFix||'').trim()) return '用一句话写下那一刻发生了什么';
+        const miss=v('details').filter(d=>!(s.detailAns&&(s.detailAns[d]||'').trim()));
+        return miss.length?`把"${miss[0]}"写具体`:'';
+      }
+      case 8: { const n=beatsLeft(); return n?`还有 ${n} 拍没填，几个关键词就行`:''; }
+      case 9: return Object.keys(s.checks).length===CHECKS.length?'':'三项都回答一下';
+      default: return '';
+    }
+  }
+  function updateNav(){
+    const msg=need();
+    $('prevBtn').hidden = s.step===0;
+    $('nextBtn').hidden = s.step===FINAL;
+    $('nextBtn').textContent = s.step===0 ? (s.last>1?'接着上次':'开始') : s.step===9 ? '生成句子清单' : '下一步';
+    $('nextBtn').disabled = !!msg;
+    $('need').textContent = msg;
+  }
+  function renderProgress(){
+    const c=$('cells'); c.innerHTML=''; c.classList.toggle('off', s.step===0);
+    for(let i=1;i<=TOTAL;i++){
+      const d=document.createElement('span');
+      const done = s.step===FINAL || i<s.step;
+      d.className='pc'+(done?' done':'')+(i===s.step?' now':'');
+      d.textContent = done ? METHODS[i][0] : '';
+      c.appendChild(d);
+    }
+    c.setAttribute('aria-label', s.step===0?'还没开始':s.step===FINAL?'9 步全部完成':`第 ${s.step} 步，共 ${TOTAL} 步`);
+    $('stepTxt').textContent = s.step===0 ? '' : s.step===FINAL ? '完成' : `第 ${s.step} 步，共 ${TOTAL} 步`;
+  }
+  function go(n){
+    const dir = n>=s.step ? 'fwd' : 'back';
+    s.step=n; if(n>0) s.last=n; save();
+    $('stage').classList.toggle('with-draft', n>=2 && n<=9);
+    document.querySelectorAll('.screen').forEach(sec=>{
+      const on=+sec.dataset.step===n; sec.hidden=!on;
+      sec.classList.remove('fwd','back');
+      if(on && n>0 && !reduce){ void sec.offsetWidth; sec.classList.add(dir); }
+    });
+    if(n===0){ const h=$('hero'); h.classList.remove('play'); void h.offsetWidth; h.classList.add('play'); }
+    if(n===1) buildPairs();
+    if(n===7) buildCohere();
+    if(n===8) buildBeats();
+    if(n===9) buildChecks();
+    if(n===FINAL){ if(!s.finishedAt){ s.finishedAt=Date.now(); save(); } buildFinal(); }
+    refresh(); renderProgress(); updateNav();
+    window.scrollTo({top:0, behavior: reduce?'auto':'instant'});
+    if (n>0){ const h=document.querySelector(`.screen[data-step="${n}"] h2`); if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); } }
+  }
+  $('nextBtn').onclick=()=>{
+    if (need()) return;
+    if (s.step===0){ if(!s.startedAt) s.startedAt=Date.now(); return go(s.last>1?s.last:1); }
+    go(s.step+1);
+  };
+  $('prevBtn').onclick=()=>{ if(s.step>0) go(s.step-1); };
+
+  fillText(); go(0);
+})();
+</script>
+</body>
+</html>
